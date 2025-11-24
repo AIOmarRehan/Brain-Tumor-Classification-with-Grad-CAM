@@ -246,7 +246,7 @@ ConfusionMatrixDisplay(cm, display_labels=le.classes_).plot(cmap='Blues')
 
 **Macro AUC formula:**
 
-<img src="https://latex.codecogs.com/svg.image?\text{AUC}_{macro}=\frac{1}{K}\sum_{i=1}^{K}\text{AUC}_i"/>
+<img src="https://latex.codecogs.com/svg.image?\color{white}\text{AUC}_{macro}=\frac{1}{K}\sum_{i=1}^{K}\text{AUC}_i"/>
 
 ```python
 from sklearn.preprocessing import label_binarize
@@ -266,12 +266,11 @@ Grad-CAM highlights regions the model uses for classification.
 
 ### Grad-CAM heatmap:
 
-<img src="https://latex.codecogs.com/svg.image?L^c_{\text{Grad-CAM}}=\text{ReLU}\left(\sum_k\alpha_k^cA^k\right)" />
+<img src="https://latex.codecogs.com/svg.image?\color{white}L^c_{\text{Grad-CAM}}=\text{ReLU}\left(\sum_k\alpha_k^cA^k\right)" />
 
 Where:
 
-<img src="https://latex.codecogs.com/svg.image?\alpha_k^c=\frac{1}{Z}\sum_{i}\sum_{j}\frac{\partial y^c}{\partial A_{ij}^k}" />
-
+<img src="https://latex.codecogs.com/svg.image?\color{white}%5Calpha_k%5Ec%3D%5Cfrac%7B1%7D%7BZ%7D%5Csum_%7Bi%7D%5Csum_%7Bj%7D%5Cfrac%7B%5Cpartial%20y%5Ec%7D%7B%5Cpartial%20A_%7Bij%7D%5Ek%7D" />
 
 Python implementation:
 
@@ -320,13 +319,11 @@ plt.show()
 
 ### Sparse Categorical Crossentropy
 
-<img src="https://latex.codecogs.com/svg.image?L=-\frac{1}{N}\sum_{i=1}^{N}\log(p_{i,y_i})" />
-
+<img src="https://latex.codecogs.com/svg.image?\color{white}L=-\frac{1}{N}\sum_{i=1}^{N}\log(p_{i,y_i})" />
 
 ### Global Average Pooling
 
-<img src="https://latex.codecogs.com/svg.image?f_c=\frac{1}{h \cdot \omega}\sum_{i=1}^{h}\sum_{j=1}^{\omega}F_{i,j,c}" />
-
+<img src="https://latex.codecogs.com/svg.image?\color{white}f_c%3D%5Cfrac%7B1%7D%7Bh%20%5Ccdot%20%5Comega%7D%20%5Csum_%7Bi%3D1%7D%5E%7Bh%7D%20%5Csum_%7Bj%3D1%7D%5E%7B%5Comega%7D%20F_%7Bi%2Cj%2Cc%7D" />
 
 ---
 
