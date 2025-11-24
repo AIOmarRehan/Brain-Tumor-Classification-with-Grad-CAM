@@ -1,6 +1,4 @@
-# ---------------------------
 # File: app/model.py
-# ---------------------------
 import os
 import numpy as np
 from PIL import Image
@@ -9,27 +7,27 @@ import cv2
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Conv2D
 
-# ---------- GPU setup ----------
-# Try to enable memory growth for GPUs to avoid TF pre-allocating all memory.
+# GPU setup
+# Try to enable memory growth for GPUs to avoid TF pre-allocating all memory
 gpus = tf.config.list_physical_devices("GPU")
 if gpus:
     try:
         for g in gpus:
             tf.config.experimental.set_memory_growth(g, True)
     except Exception as e:
-        # If setting memory growth fails, just print a warning and continue.
+        # If setting memory growth fails, just print a warning and continue
         print("Warning: Could not set memory growth:", e)
 
 print("Num GPUs Available:", len(gpus))
 print("TensorFlow version:", tf.__version__)
 
-# -------- Load model --------
+# Load model
 MODEL_PATH = os.getenv("MODEL_PATH", "saved_model/InceptionV3_Brain_Tumor_MRI.h5")
 print("Loading model from:", MODEL_PATH)
 model = tf.keras.models.load_model(MODEL_PATH)
 model.trainable = False
 
-# -------- Find last conv layer and build grad_model once --------
+# Find last conv layer and build grad_model once
 # Find the last Conv2D layer
 last_conv_layer = None
 for layer in reversed(model.layers):
@@ -43,10 +41,10 @@ target_layer = model.get_layer(last_conv_layer.name)
 grad_model = Model(inputs=model.inputs, outputs=[target_layer.output, model.output])
 print("Built grad_model with target layer:", target_layer.name)
 
-# -------- Labels --------
+# Labels
 CLASS_NAMES = ["glioma", "meningioma", "notumor", "pituitary"]
 
-# -------- Preprocessing (use 299x299 for InceptionV3) --------
+# Preprocessing (use 299x299 for InceptionV3)
 def preprocess_image_pil(img: Image.Image, target_size=(512, 512)):
     """
     Accepts PIL.Image, returns float32 numpy array shaped (1,H,W,3) with values in [0,1].
@@ -65,13 +63,13 @@ def pil_to_tf_tensor(img: Image.Image, target_size=(512, 512)):
     arr = preprocess_image_pil(img, target_size=target_size)
     return tf.convert_to_tensor(arr, dtype=tf.float32)
 
-# -------- Prediction helper --------
+# Prediction helper
 def predict(img: Image.Image):
     """
     Returns (label, confidence, prob_dict)
     """
     input_tensor = preprocess_image_pil(img)  # numpy (1,H,W,3)
-    # Try to call model by direct positional input (works for most Keras models).
+    # Try to call model by direct positional input (works for most Keras models)
     preds = model(input_tensor, training=False)
     probs = preds.numpy()[0]
     class_idx = int(np.argmax(probs))
@@ -79,8 +77,8 @@ def predict(img: Image.Image):
     prob_dict = {CLASS_NAMES[i]: float(probs[i]) for i in range(len(CLASS_NAMES))}
     return CLASS_NAMES[class_idx], confidence, prob_dict
 
-# --------- Compiled Grad-CAM compute function ---------
-# We create a tf.function that computes conv features and gradients for a given input and class index.
+# Compiled Grad-CAM compute function
+# We create a tf.function that computes conv features and gradients for a given input and class index
 @tf.function
 def _compute_conv_and_grads(img_input, class_index):
     with tf.GradientTape() as tape:
@@ -98,10 +96,10 @@ def _compute_conv_and_grads(img_input, class_index):
 def compute_gradcam_overlay(img: Image.Image, interpolant=0.5, target_size=(512,512)):
     """
     High-level wrapper:
-    - builds input tensor
-    - obtains predicted class index (fast forward)
-    - calls compiled grad function to get conv features + grads
-    - computes heatmap and overlay efficiently
+    -> builds input tensor
+    -> obtains predicted class index (fast forward)
+    -> calls compiled grad function to get conv features + grads
+    -> computes heatmap and overlay efficiently
     Returns: overlay as uint8 HxWx3 numpy array
     """
     # Build tensor
@@ -120,7 +118,7 @@ def compute_gradcam_overlay(img: Image.Image, interpolant=0.5, target_size=(512,
     grads_np = grads.numpy() if grads is not None else None
 
     if grads_np is None:
-        # Fallback: gradients None -> return original image as overlay (no heatmap)
+        # Fallback: gradients None --> return original image as overlay (no heatmap)
         H = input_tf.shape[1]
         W = input_tf.shape[2]
         original_img = np.array(img.resize((W, H))).astype("uint8")
@@ -128,7 +126,7 @@ def compute_gradcam_overlay(img: Image.Image, interpolant=0.5, target_size=(512,
             original_img = np.stack([original_img]*3, axis=-1)
         return original_img
 
-    # conv_out_np shape (1,Hf,Wf,C) -> take first batch
+    # conv_out_np shape (1,Hf,Wf,C) --> take first batch
     if conv_out_np.ndim == 4 and conv_out_np.shape[0] == 1:
         conv_out_np = conv_out_np[0]
     # grads_np shape (1,Hf,Wf,C)
@@ -158,7 +156,7 @@ def compute_gradcam_overlay(img: Image.Image, interpolant=0.5, target_size=(512,
     heatmap_color = cv2.applyColorMap(heatmap_resized, cv2.COLORMAP_JET)  # BGR
     heatmap_color = cv2.cvtColor(heatmap_color, cv2.COLOR_BGR2RGB).astype("float32")
 
-    # Ensure original image is in uint8 0..255
+    # Ensure original image is in uint8 (0,255)
     orig_uint8 = np.clip(original_img, 0, 255).astype("uint8")
 
     # Combine using interpolant: (interpolant * original + (1-interpolant) * heatmap_color)
@@ -170,7 +168,3 @@ __all__ = ["model", "grad_model", "predict", "compute_gradcam_overlay", "CLASS_N
 # Backwards-compatible function name expected by main.py
 def gradcam(img: Image.Image, interpolant=0.5):
     return compute_gradcam_overlay(img, interpolant=interpolant)
-
-# ---------------------------
-# End of app/model.py
-# ---------------------------
