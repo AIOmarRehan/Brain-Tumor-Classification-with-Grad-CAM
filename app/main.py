@@ -1,6 +1,4 @@
-# ---------------------------
 # File: app/main.py
-# ---------------------------
 from fastapi import FastAPI, UploadFile, File, Query
 from fastapi.responses import JSONResponse, StreamingResponse
 from PIL import Image
@@ -60,6 +58,3 @@ async def gradcam_image(file: UploadFile = File(...), interpolant: float = Query
 @app.get("/health")
 async def health():
     return {"status": "ok", "classes": CLASS_NAMES}
-# ---------------------------
-# End of app/main.py
-# ---------------------------
