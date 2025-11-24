@@ -86,7 +86,7 @@ Cleaning ensures a **robust dataset** with minimal noise.
 
 ## **3. Data Augmentation & Class Balancing**
 
-Target ~2,000 images per class using heavy augmentation:
+Target ~200 images per class using heavy augmentation:
 
 ```python
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
