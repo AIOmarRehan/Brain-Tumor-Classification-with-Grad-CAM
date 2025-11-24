@@ -1,3 +1,11 @@
+[If you would like a detailed explanation of this project, please refer to the Medium article below.](https://medium.com/@ai.omar.rehan/brain-tumor-classification-using-inceptionv3-and-grad-cam-a-deep-learning-pipeline-859dbe84be1d)
+
+---
+
+[The project is also available for testing on Hugging Face.](https://huggingface.co/spaces/AIOmarRehan/Brain_Tumor_Classification_with_InceptionV3-Grad-CAM)
+
+---
+
 # **Brain Tumor Classification Using InceptionV3 and Grad-CAM**
 
 A complete deep learning pipeline for **brain tumor classification** using MRI scans.
