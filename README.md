@@ -226,6 +226,10 @@ plt.show()
 * Curves indicate **smooth convergence**
 * Small train/val gap → **limited overfitting**
 
+<p align="center">
+  <img src="https://files.catbox.moe/le1mbk.png" width="100%">
+</p>
+
 ---
 
 ## **9. Performance Metrics**
